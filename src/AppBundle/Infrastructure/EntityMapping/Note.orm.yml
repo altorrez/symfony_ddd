@@ -1,0 +1,17 @@
+AppBundle\Domain\Entity\Note:
+  type: entity
+  table: note
+  schema: notes
+  repositoryClass: AppBundle\Infrastructure\Repository\NoteRepository
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    text:
+      type: string
+  manyToOne:
+    user:
+      targetEntity: AppBundle\Domain\Entity\User
+      inversedBy: notes

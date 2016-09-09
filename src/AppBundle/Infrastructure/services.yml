@@ -1,0 +1,43 @@
+services:
+  error.layer:
+    class: AppBundle\Infrastructure\Utility\ErrorLayer
+
+  note.controller:
+    class: AppBundle\View\Controller\NoteController
+    arguments:
+      - '@error.layer'
+    calls:
+      - [setContainer, ['@service_container']]
+
+  persistence.doctrine:
+    class: AppBundle\Infrastructure\DoctrinePersistence
+    arguments:
+      - '@doctrine.orm.entity_manager'
+
+  doctrine.note.repository:
+    class: Doctrine\ORM\EntityRepository
+    factory: ['@doctrine.orm.entity_manager', getRepository]
+    arguments:
+      - AppBundle\Domain\Entity\Note
+
+  doctrine.user.repository:
+    class: Doctrine\ORM\EntityRepository
+    factory: ['@doctrine.orm.entity_manager', getRepository]
+    arguments:
+      - AppBundle\Domain\Entity\User
+
+  note.service:
+    class: AppBundle\Application\Service\NoteService
+    arguments:
+      - '@error.layer'
+    calls:
+      - [setPersistence, ['@persistence.doctrine']]
+      - [setNoteRepository, ['@doctrine.note.repository']]
+
+  user.service:
+    class: AppBundle\Application\Service\UserService
+    arguments:
+      - '@error.layer'
+    calls:
+      - [setPersistence, ['@persistence.doctrine']]
+      - [setUserRepository, ['@doctrine.user.repository']]
